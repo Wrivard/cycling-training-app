@@ -1,0 +1,61 @@
+{
+  "app": {
+    "name": "Cycling Planner",
+    "tagline": "Plan your week, ride it, compare."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "calendar": "Calendar",
+    "routes": "Routes",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signInWith": "Sign in with {{provider}}",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Continue",
+    "googleProvider": "Google",
+    "or": "or",
+    "errorGeneric": "Sign-in failed. Check your credentials and try again.",
+    "loading": "Signing you in…"
+  },
+  "dashboard": {
+    "title": "This week",
+    "subtitle": "Upcoming sessions, today's recovery, and recent rides at a glance.",
+    "sectionUpcoming": "Upcoming sessions",
+    "sectionRecovery": "Today's recovery",
+    "sectionRecent": "Recent activities",
+    "sectionLoad": "Weekly load"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Plan sessions, see what's done, compare planned vs actual."
+  },
+  "routes": {
+    "title": "Routes",
+    "subtitle": "Draw on the map or import a GPX file.",
+    "newRoute": "New route",
+    "importGpx": "Import GPX"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Connect your services and manage your profile.",
+    "connections": "Connections",
+    "strava": "Strava",
+    "whoop": "Whoop",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "syncNow": "Sync now",
+    "language": "Language",
+    "displayName": "Display name"
+  },
+  "common": {
+    "loading": "Loading…",
+    "comingSoon": "Coming soon — wired in the next build step.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
+}

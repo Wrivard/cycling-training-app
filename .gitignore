@@ -1,0 +1,40 @@
+# ---------------------------------------------------------------------------
+# Repo-wide ignores. Per-project ignores live in frontend/.gitignore.
+# ---------------------------------------------------------------------------
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Python (backend)
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+**/.venv/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+*.egg-info/
+
+# Node (frontend)
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/.vite/
+
+# Logs
+*.log
+
+# Local Supabase artifacts (if user runs `supabase start`)
+supabase/.branches/
+supabase/.temp/

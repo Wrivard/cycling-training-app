@@ -1,0 +1,61 @@
+{
+  "app": {
+    "name": "Planificateur Cycliste",
+    "tagline": "Planifie ta semaine, roule-la, compare."
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "calendar": "Calendrier",
+    "routes": "Routes",
+    "settings": "Paramètres",
+    "signOut": "Déconnexion"
+  },
+  "auth": {
+    "signIn": "Connexion",
+    "signInWith": "Continuer avec {{provider}}",
+    "email": "Courriel",
+    "password": "Mot de passe",
+    "submit": "Continuer",
+    "googleProvider": "Google",
+    "or": "ou",
+    "errorGeneric": "Connexion échouée. Vérifie tes identifiants et réessaie.",
+    "loading": "Connexion en cours…"
+  },
+  "dashboard": {
+    "title": "Cette semaine",
+    "subtitle": "Séances à venir, récupération du jour et dernières sorties.",
+    "sectionUpcoming": "Séances à venir",
+    "sectionRecovery": "Récupération du jour",
+    "sectionRecent": "Activités récentes",
+    "sectionLoad": "Charge de la semaine"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "subtitle": "Planifie tes séances, vois ce qui est fait, compare prévu vs réalisé."
+  },
+  "routes": {
+    "title": "Routes",
+    "subtitle": "Trace sur la carte ou importe un fichier GPX.",
+    "newRoute": "Nouvelle route",
+    "importGpx": "Importer un GPX"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Connecte tes services et gère ton profil.",
+    "connections": "Connexions",
+    "strava": "Strava",
+    "whoop": "Whoop",
+    "connect": "Connecter",
+    "disconnect": "Déconnecter",
+    "syncNow": "Synchroniser",
+    "language": "Langue",
+    "displayName": "Nom affiché"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "comingSoon": "Bientôt disponible — câblé à la prochaine étape.",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer"
+  }
+}
