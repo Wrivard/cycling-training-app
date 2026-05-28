@@ -1,4 +1,4 @@
-"""Strava API client (OAuth + activities).
+"""Strava OAuth + (later) activity client.
 
 Strava terms-of-service constraints baked into this client:
 
@@ -16,9 +16,74 @@ Strava terms-of-service constraints baked into this client:
 
 from __future__ import annotations
 
-# Implementation lands in step 4. The module exists so other code can
-# import its (future) public surface without churn.
+from urllib.parse import urlencode
+
+import httpx
+
+from app.core.config import get_settings
 
 STRAVA_API_BASE = "https://www.strava.com/api/v3"
 STRAVA_OAUTH_BASE = "https://www.strava.com/oauth"
 STRAVA_SCOPES = "read,activity:read_all"
+_REQUEST_TIMEOUT = httpx.Timeout(15.0)
+
+
+def build_authorize_url(state: str) -> str:
+    settings = get_settings()
+    params = {
+        "client_id": settings.strava_client_id,
+        "redirect_uri": settings.strava_redirect_uri,
+        "response_type": "code",
+        "approval_prompt": "auto",
+        "scope": STRAVA_SCOPES,
+        "state": state,
+    }
+    return f"{STRAVA_OAUTH_BASE}/authorize?{urlencode(params)}"
+
+
+async def exchange_code(code: str) -> dict:
+    """Exchange an authorization code for tokens + athlete payload."""
+    settings = get_settings()
+    async with httpx.AsyncClient(timeout=_REQUEST_TIMEOUT) as client:
+        response = await client.post(
+            f"{STRAVA_OAUTH_BASE}/token",
+            data={
+                "client_id": settings.strava_client_id,
+                "client_secret": settings.strava_client_secret,
+                "code": code,
+                "grant_type": "authorization_code",
+            },
+        )
+        response.raise_for_status()
+        return response.json()
+
+
+async def refresh_access_token(refresh_token: str) -> dict:
+    """Trade a refresh token for a fresh access token (Strava rotates both)."""
+    settings = get_settings()
+    async with httpx.AsyncClient(timeout=_REQUEST_TIMEOUT) as client:
+        response = await client.post(
+            f"{STRAVA_OAUTH_BASE}/token",
+            data={
+                "client_id": settings.strava_client_id,
+                "client_secret": settings.strava_client_secret,
+                "refresh_token": refresh_token,
+                "grant_type": "refresh_token",
+            },
+        )
+        response.raise_for_status()
+        return response.json()
+
+
+async def revoke_token(access_token: str) -> bool:
+    """Best-effort deauthorize. Returns False on failure but never raises."""
+    try:
+        async with httpx.AsyncClient(timeout=_REQUEST_TIMEOUT) as client:
+            response = await client.post(
+                f"{STRAVA_OAUTH_BASE}/deauthorize",
+                data={"access_token": access_token},
+            )
+            response.raise_for_status()
+            return True
+    except httpx.HTTPError:
+        return False

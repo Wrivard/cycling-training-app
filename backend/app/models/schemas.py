@@ -32,7 +32,9 @@ class ProfileUpdate(BaseModel):
 OAuthProvider = Literal["strava", "whoop"]
 
 
-class OAuthConnection(BaseModel):
+class OAuthConnectionStatus(BaseModel):
+    """Public status of a single provider connection."""
+
     model_config = ConfigDict(from_attributes=True)
 
     provider: OAuthProvider
@@ -40,6 +42,19 @@ class OAuthConnection(BaseModel):
     expires_at: datetime | None = None
     scope: str | None = None
     provider_user_id: str | None = None
+
+
+class OAuthConnectionsStatus(BaseModel):
+    """Map of all providers and whether/how the user is connected."""
+
+    strava: OAuthConnectionStatus
+    whoop: OAuthConnectionStatus
+
+
+class OAuthAuthorizeUrl(BaseModel):
+    """Returned by `/api/oauth/{provider}/start` — the URL to redirect the browser to."""
+
+    authorize_url: str
 
 
 # ---------- Routes ----------

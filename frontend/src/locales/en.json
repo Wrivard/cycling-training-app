@@ -61,7 +61,9 @@
     "statusConnected": "Connected",
     "statusDisconnected": "Not connected",
     "profileSaved": "Saved",
-    "profileSaveError": "Could not save your profile. Try again."
+    "profileSaveError": "Could not save your profile. Try again.",
+    "connectedNotice": "{{provider}} is now connected.",
+    "errorNotice": "OAuth failed: {{error}}. Try again."
   },
   "common": {
     "loading": "Loading…",

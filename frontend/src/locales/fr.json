@@ -61,7 +61,9 @@
     "statusConnected": "Connecté",
     "statusDisconnected": "Non connecté",
     "profileSaved": "Enregistré",
-    "profileSaveError": "Impossible d'enregistrer ton profil. Réessaie."
+    "profileSaveError": "Impossible d'enregistrer ton profil. Réessaie.",
+    "connectedNotice": "{{provider}} est maintenant connecté.",
+    "errorNotice": "OAuth échoué : {{error}}. Réessaie."
   },
   "common": {
     "loading": "Chargement…",

@@ -54,6 +54,10 @@ class Settings(BaseSettings):
         alias="CORS_ORIGINS",
     )
 
+    # Where the OAuth callbacks redirect the browser back to after exchange.
+    # Must be the public origin of the frontend (no trailing slash).
+    frontend_url: str = "http://localhost:5173"
+
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins_raw.split(",") if origin.strip()]
