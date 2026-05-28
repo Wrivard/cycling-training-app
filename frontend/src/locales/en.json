@@ -34,7 +34,14 @@
     "sectionUpcoming": "Upcoming sessions",
     "sectionRecovery": "Today's recovery",
     "sectionRecent": "Recent activities",
-    "sectionLoad": "Weekly load"
+    "sectionLoad": "Weekly load",
+    "upcomingEmpty": "No sessions planned for the rest of the week.",
+    "recentEmpty": "No Strava activities in the last 7 days.",
+    "noWhoopToday": "No Whoop recovery yet today. Sync from Settings.",
+    "loadPlanned": "Planned",
+    "loadActual": "Actual",
+    "metricSleep": "Sleep",
+    "metricStrain": "Strain"
   },
   "calendar": {
     "title": "Calendar",

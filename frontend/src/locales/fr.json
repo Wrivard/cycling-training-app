@@ -34,7 +34,14 @@
     "sectionUpcoming": "Séances à venir",
     "sectionRecovery": "Récupération du jour",
     "sectionRecent": "Activités récentes",
-    "sectionLoad": "Charge de la semaine"
+    "sectionLoad": "Charge de la semaine",
+    "upcomingEmpty": "Aucune séance planifiée pour la fin de la semaine.",
+    "recentEmpty": "Aucune activité Strava sur les 7 derniers jours.",
+    "noWhoopToday": "Pas encore de récupération Whoop aujourd'hui. Synchronise depuis Paramètres.",
+    "loadPlanned": "Planifié",
+    "loadActual": "Réalisé",
+    "metricSleep": "Sommeil",
+    "metricStrain": "Effort"
   },
   "calendar": {
     "title": "Calendrier",
