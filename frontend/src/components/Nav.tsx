@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 
-import { Button } from "@/components/ui/Button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { UserMenu } from "@/components/UserMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/cn";
 
@@ -15,7 +15,7 @@ function navLinkClass(isActive: boolean) {
 
 export function Nav() {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur shadow-[inset_0_-1px_0_0_rgba(0,0,0,0.08)]">
@@ -53,11 +53,7 @@ export function Nav() {
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
-          {user ? (
-            <Button variant="secondary" size="sm" onClick={() => void signOut()}>
-              {t("nav.signOut")}
-            </Button>
-          ) : null}
+          {user ? <UserMenu /> : null}
         </div>
       </nav>
     </header>

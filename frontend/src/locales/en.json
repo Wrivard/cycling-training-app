@@ -49,6 +49,7 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Connect your services and manage your profile.",
+    "profile": "Profile",
     "connections": "Connections",
     "strava": "Strava",
     "whoop": "Whoop",
@@ -58,7 +59,9 @@
     "language": "Language",
     "displayName": "Display name",
     "statusConnected": "Connected",
-    "statusDisconnected": "Not connected"
+    "statusDisconnected": "Not connected",
+    "profileSaved": "Saved",
+    "profileSaveError": "Could not save your profile. Try again."
   },
   "common": {
     "loading": "Loading…",

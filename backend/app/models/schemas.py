@@ -18,6 +18,13 @@ from pydantic import BaseModel, ConfigDict, Field
 class UserProfile(BaseModel):
     id: str
     email: str | None = None
+    display_name: str | None = None
+
+
+class ProfileUpdate(BaseModel):
+    """Subset of profile fields the user can update via PATCH /api/me/profile."""
+
+    display_name: str = Field(..., min_length=1, max_length=200)
 
 
 # ---------- OAuth ----------

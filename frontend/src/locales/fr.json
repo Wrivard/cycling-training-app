@@ -49,6 +49,7 @@
   "settings": {
     "title": "Paramètres",
     "subtitle": "Connecte tes services et gère ton profil.",
+    "profile": "Profil",
     "connections": "Connexions",
     "strava": "Strava",
     "whoop": "Whoop",
@@ -58,7 +59,9 @@
     "language": "Langue",
     "displayName": "Nom affiché",
     "statusConnected": "Connecté",
-    "statusDisconnected": "Non connecté"
+    "statusDisconnected": "Non connecté",
+    "profileSaved": "Enregistré",
+    "profileSaveError": "Impossible d'enregistrer ton profil. Réessaie."
   },
   "common": {
     "loading": "Chargement…",

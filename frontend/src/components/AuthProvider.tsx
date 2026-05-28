@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useCallback,
   useEffect,
@@ -15,6 +16,7 @@ const INITIAL: InternalState = { session: null, user: null, status: "loading" };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<InternalState>(INITIAL);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let cancelled = false;
@@ -28,19 +30,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     });
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       setState({
         session,
         user: session?.user ?? null,
         status: (session ? "authenticated" : "anonymous") satisfies AuthStatus,
       });
+      // Hard-clear React Query state when the user signs out so a different
+      // user (or the same user after a token swap) never sees stale data.
+      if (event === "SIGNED_OUT") {
+        queryClient.clear();
+      }
     });
 
     return () => {
       cancelled = true;
       sub.subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
