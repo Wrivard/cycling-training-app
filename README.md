@@ -102,15 +102,52 @@ These are encoded in code and DB as well as documented here:
 - Access tokens expire in ~1 hour and are refreshed before each call when expired.
 - Recovery score, HRV, RHR and SpO2 are exposed through the Cycle endpoints in v2.
 
-## Build plan (in order)
+## Build plan (in order) — all done
 
 | Step | Status   | Scope                                                                   |
 |------|----------|-------------------------------------------------------------------------|
 | 1    | **done** | Scaffold: backend, frontend, Tailwind/Geist design system, migrations   |
-| 2    | next     | Supabase Auth wiring end-to-end (login → JWT-protected backend routes)  |
-| 3    |          | Settings page + Strava + Whoop OAuth (start / callback / disconnect)    |
-| 4    |          | Manual sync endpoints + buttons (`/api/sync/{strava,whoop}`)            |
-| 5    |          | Calendar CRUD for planned sessions                                      |
-| 6    |          | Mapbox route planner (draw + snap) + GPX import                         |
-| 7    |          | Planned-vs-actual matching and comparison view                          |
-| 8    |          | Dashboard polish                                                        |
+| 2    | **done** | Supabase Auth wiring end-to-end (`/api/me` joins profiles, profile edit, sign-out cache clear) |
+| 3    | **done** | Settings page + Strava + Whoop OAuth (start / callback / disconnect) with state JWT + Fernet token storage |
+| 4    | **done** | Manual sync endpoints + buttons (`/api/sync/{strava,whoop}`) with refresh-on-demand + 429 typed errors |
+| 5    | **done** | Calendar CRUD for planned sessions (custom Monday-first month grid + modal form + match endpoint) |
+| 6    | **done** | Mapbox route planner (cycling Directions snap-to-road) + GPX import     |
+| 7    | **done** | Planned-vs-actual matching UI (picker + comparison deltas + unmatch)    |
+| 8    | **done** | Dashboard (week summary, recovery, weekly load, recent activities) + code-split mapbox |
+
+## Project state — what's wired
+
+Endpoints (all JWT-protected via the Supabase JWT middleware, all RLS-scoped):
+
+```
+GET    /api/me                                 user + display_name from profiles
+PATCH  /api/me/profile                         update display_name
+GET    /api/oauth/connections                  per-provider connection status
+GET    /api/oauth/{p}/start                    authorize URL (signed state JWT, 10 min TTL)
+GET    /api/oauth/{p}/callback                 exchange → Fernet upsert → 307 to frontend
+POST   /api/oauth/{p}/disconnect               best-effort revoke + DELETE row
+POST   /api/sync/strava                        refresh → fetch /athlete/activities → upsert
+POST   /api/sync/whoop                         refresh → fetch recovery + cycle + sleep → upsert
+GET    /api/sessions?start=&end=               planned sessions in range
+POST   /api/sessions                           create planned session
+PATCH  /api/sessions/{id}                      update / unmatch
+DELETE /api/sessions/{id}                      delete
+POST   /api/sessions/{id}/match/{aid}          link to Strava activity, return SessionComparison
+GET    /api/activities?start=&end=             Strava activities in range
+GET    /api/whoop/metrics?start=&end=          Whoop metrics in range
+GET    /api/routes                             saved routes (newest first)
+POST   /api/routes                             persist a drawn route
+POST   /api/routes/import-gpx                  multipart upload, gpxpy parse, 10 MB cap
+DELETE /api/routes/{id}                        delete a route
+```
+
+Frontend pages: `/login`, `/` (dashboard), `/calendar`, `/routes`, `/settings`. The
+`/routes` page is lazy-loaded so mapbox-gl only ships when needed.
+
+What still needs YOU before you can use it end-to-end:
+
+1. Create the Supabase project, paste `supabase/migrations.sql` into the SQL Editor.
+2. Fill in `.env` at the repo root (Supabase URL / anon / service-role / JWT secret,
+   Strava + Whoop client IDs & secrets registered with the right redirect URIs,
+   Mapbox public token, and a generated `TOKEN_ENCRYPTION_KEY`).
+3. Enable Google OAuth in Supabase if you want the Google sign-in button to work.
