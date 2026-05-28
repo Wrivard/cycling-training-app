@@ -12,14 +12,21 @@
   },
   "auth": {
     "signIn": "Connexion",
+    "signUp": "Créer un compte",
     "signInWith": "Continuer avec {{provider}}",
     "email": "Courriel",
     "password": "Mot de passe",
     "submit": "Continuer",
+    "createAccount": "Créer le compte",
     "googleProvider": "Google",
     "or": "ou",
-    "errorGeneric": "Connexion échouée. Vérifie tes identifiants et réessaie.",
-    "loading": "Connexion en cours…"
+    "noAccount": "Pas encore de compte ?",
+    "haveAccount": "Déjà un compte ?",
+    "errorGeneric": "Une erreur est survenue. Réessaie.",
+    "errorSignIn": "Connexion échouée. Vérifie tes identifiants et réessaie.",
+    "emailSentTitle": "Vérifie ta boîte courriel",
+    "emailSentBody": "On t'a envoyé un lien de confirmation. Clique dessus pour finaliser ton compte.",
+    "loading": "Un instant…"
   },
   "dashboard": {
     "title": "Cette semaine",
@@ -49,7 +56,9 @@
     "disconnect": "Déconnecter",
     "syncNow": "Synchroniser",
     "language": "Langue",
-    "displayName": "Nom affiché"
+    "displayName": "Nom affiché",
+    "statusConnected": "Connecté",
+    "statusDisconnected": "Non connecté"
   },
   "common": {
     "loading": "Chargement…",

@@ -8,7 +8,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "@/App";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider } from "@/components/AuthProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { queryClient } from "@/lib/queryClient";
 
 const container = document.getElementById("root");
@@ -16,10 +17,12 @@ if (!container) throw new Error("Missing #root element in index.html");
 
 createRoot(container).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </StrictMode>,
 );

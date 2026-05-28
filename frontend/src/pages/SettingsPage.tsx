@@ -36,7 +36,7 @@ export function SettingsPage() {
                 <div className="flex items-center gap-3">
                   <span className="text-[15px] font-medium text-foreground">{conn.label}</span>
                   <Badge tone={conn.connected ? "good" : "neutral"}>
-                    {conn.connected ? "Connected" : "Not connected"}
+                    {conn.connected ? t("settings.statusConnected") : t("settings.statusDisconnected")}
                   </Badge>
                 </div>
                 <div className="flex gap-2">

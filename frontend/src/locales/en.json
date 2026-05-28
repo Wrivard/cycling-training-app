@@ -12,14 +12,21 @@
   },
   "auth": {
     "signIn": "Sign in",
+    "signUp": "Sign up",
     "signInWith": "Sign in with {{provider}}",
     "email": "Email",
     "password": "Password",
     "submit": "Continue",
+    "createAccount": "Create account",
     "googleProvider": "Google",
     "or": "or",
-    "errorGeneric": "Sign-in failed. Check your credentials and try again.",
-    "loading": "Signing you in…"
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "errorGeneric": "Something went wrong. Try again.",
+    "errorSignIn": "Sign-in failed. Check your credentials and try again.",
+    "emailSentTitle": "Check your inbox",
+    "emailSentBody": "We sent you a confirmation link. Click it to finish creating your account.",
+    "loading": "Working on it…"
   },
   "dashboard": {
     "title": "This week",
@@ -49,7 +56,9 @@
     "disconnect": "Disconnect",
     "syncNow": "Sync now",
     "language": "Language",
-    "displayName": "Display name"
+    "displayName": "Display name",
+    "statusConnected": "Connected",
+    "statusDisconnected": "Not connected"
   },
   "common": {
     "loading": "Loading…",

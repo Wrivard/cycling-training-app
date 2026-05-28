@@ -48,11 +48,11 @@ export async function apiFetch<T = unknown>(
   const res = await fetch(url, { ...options, headers, body });
 
   if (!res.ok) {
-    let errorBody: unknown = null;
+    let errorBody: unknown;
     try {
       errorBody = await res.json();
     } catch {
-      errorBody = await res.text();
+      errorBody = await res.text().catch(() => null);
     }
     throw new ApiError(`Request failed: ${res.status}`, res.status, errorBody);
   }

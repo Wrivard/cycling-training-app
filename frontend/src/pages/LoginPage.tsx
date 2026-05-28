@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 type LocationState = { from?: string } | null;
+type Mode = "signin" | "signup";
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -18,25 +19,48 @@ export function LoginPage() {
   const location = useLocation();
   const fromPath = (location.state as LocationState)?.from ?? "/";
 
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
 
   if (status === "authenticated") {
     return <Navigate to={fromPath} replace />;
   }
 
-  async function handleEmailSignIn(e: FormEvent) {
+  function toggleMode() {
+    setMode((m) => (m === "signin" ? "signup" : "signin"));
+    setError(null);
+    setEmailSent(false);
+  }
+
+  async function handleEmailSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (signInError) setError(t("auth.errorGeneric"));
+      if (mode === "signin") {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (signInError) setError(t("auth.errorSignIn"));
+      } else {
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (signUpError) {
+          setError(signUpError.message);
+        } else if (!data.session) {
+          // Email confirmation is required in this Supabase project.
+          setEmailSent(true);
+        }
+        // If data.session is set, onAuthStateChange will flip status and the
+        // <Navigate> at the top will run on next render.
+      }
     } catch {
       setError(t("auth.errorGeneric"));
     } finally {
@@ -46,12 +70,25 @@ export function LoginPage() {
 
   async function handleGoogleSignIn() {
     setError(null);
-    const { error: signInError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
-    });
-    if (signInError) setError(t("auth.errorGeneric"));
+    setSubmitting(true);
+    try {
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/` },
+      });
+      if (signInError) {
+        setError(t("auth.errorGeneric"));
+        setSubmitting(false);
+      }
+      // success path: Supabase performs the redirect, the page is leaving.
+    } catch {
+      setError(t("auth.errorGeneric"));
+      setSubmitting(false);
+    }
   }
+
+  const heading = mode === "signin" ? t("auth.signIn") : t("auth.signUp");
+  const cta = mode === "signin" ? t("auth.submit") : t("auth.createAccount");
 
   return (
     <div className="grid min-h-screen place-items-center bg-white px-6">
@@ -66,47 +103,57 @@ export function LoginPage() {
         <Card lift>
           <CardBody>
             <h1 className="text-[28px] font-semibold leading-tight tracking-[var(--tracking-card)] text-foreground">
-              {t("auth.signIn")}
+              {heading}
             </h1>
             <p className="mt-1 text-[14px] text-gray-600">{t("app.tagline")}</p>
 
-            <form onSubmit={(e) => void handleEmailSignIn(e)} className="mt-6 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={submitting}
-                />
+            {emailSent ? (
+              <div
+                className="mt-6 rounded-lg bg-gray-50 px-4 py-3 shadow-[var(--shadow-border-light)]"
+                role="status"
+              >
+                <p className="text-[14px] text-foreground">{t("auth.emailSentTitle")}</p>
+                <p className="mt-1 text-[13px] text-gray-600">{t("auth.emailSentBody")}</p>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="password">{t("auth.password")}</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={submitting}
-                />
-              </div>
+            ) : (
+              <form onSubmit={(e) => void handleEmailSubmit(e)} className="mt-6 space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">{t("auth.email")}</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">{t("auth.password")}</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
 
-              {error ? (
-                <p className="text-[13px] text-[var(--color-rec-bad)]" role="alert">
-                  {error}
-                </p>
-              ) : null}
+                {error ? (
+                  <p className="text-[13px] text-[var(--color-rec-bad)]" role="alert">
+                    {error}
+                  </p>
+                ) : null}
 
-              <Button type="submit" fullWidth disabled={submitting}>
-                {submitting ? t("auth.loading") : t("auth.submit")}
-              </Button>
-            </form>
+                <Button type="submit" fullWidth disabled={submitting}>
+                  {submitting ? t("auth.loading") : cta}
+                </Button>
+              </form>
+            )}
 
             <div className="my-5 flex items-center gap-3 text-[12px] text-gray-400">
               <div className="h-px flex-1 bg-gray-100" />
@@ -122,6 +169,17 @@ export function LoginPage() {
             >
               {t("auth.signInWith", { provider: t("auth.googleProvider") })}
             </Button>
+
+            <p className="mt-5 text-center text-[13px] text-gray-500">
+              {mode === "signin" ? t("auth.noAccount") : t("auth.haveAccount")}{" "}
+              <button
+                type="button"
+                onClick={toggleMode}
+                className="text-link underline-offset-2 hover:underline"
+              >
+                {mode === "signin" ? t("auth.signUp") : t("auth.signIn")}
+              </button>
+            </p>
           </CardBody>
         </Card>
       </div>

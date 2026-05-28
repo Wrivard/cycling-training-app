@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // Both the backend (pydantic-settings) and the frontend (Vite) read from the
+  // SAME `.env` at the repo root. Keep them in sync — see backend/app/core/config.py.
+  envDir: fileURLToPath(new URL("..", import.meta.url)),
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
