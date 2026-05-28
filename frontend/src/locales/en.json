@@ -77,7 +77,21 @@
     "title": "Routes",
     "subtitle": "Draw on the map or import a GPX file.",
     "newRoute": "New route",
-    "importGpx": "Import GPX"
+    "importGpx": "Import GPX",
+    "draw": "Draw a route",
+    "hint": "Click the map to add waypoints. Each segment snaps to roads via Mapbox Directions (cycling profile).",
+    "namePlaceholder": "Route name",
+    "saveRoute": "Save route",
+    "saveError": "Could not save the route. Try again.",
+    "savedRoutes": "Saved routes",
+    "emptyList": "No saved routes yet.",
+    "undo": "Undo",
+    "clear": "Clear",
+    "confirmDelete": "Delete \"{{name}}\"?",
+    "source": {
+      "drawn": "Drawn",
+      "gpx": "GPX"
+    }
   },
   "settings": {
     "title": "Settings",

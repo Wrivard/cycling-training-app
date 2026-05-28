@@ -77,7 +77,21 @@
     "title": "Routes",
     "subtitle": "Trace sur la carte ou importe un fichier GPX.",
     "newRoute": "Nouvelle route",
-    "importGpx": "Importer un GPX"
+    "importGpx": "Importer un GPX",
+    "draw": "Tracer une route",
+    "hint": "Clique sur la carte pour ajouter des points. Chaque segment est snappé aux routes via Mapbox Directions (profil cycling).",
+    "namePlaceholder": "Nom de la route",
+    "saveRoute": "Enregistrer",
+    "saveError": "Impossible d'enregistrer la route. Réessaie.",
+    "savedRoutes": "Routes enregistrées",
+    "emptyList": "Aucune route enregistrée.",
+    "undo": "Annuler dernier point",
+    "clear": "Effacer",
+    "confirmDelete": "Supprimer « {{name}} » ?",
+    "source": {
+      "drawn": "Tracée",
+      "gpx": "GPX"
+    }
   },
   "settings": {
     "title": "Paramètres",
