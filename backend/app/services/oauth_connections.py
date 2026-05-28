@@ -77,6 +77,28 @@ def delete_connection(user_id: str, provider: Provider) -> None:
     admin.table(OAUTH_TABLE).delete().eq("user_id", user_id).eq("provider", provider).execute()
 
 
+def refresh_tokens(
+    *,
+    user_id: str,
+    provider: Provider,
+    access_token: str,
+    refresh_token: str,
+    expires_at: datetime | None,
+) -> None:
+    """Patch the encrypted tokens + expiry of an existing connection row.
+
+    Leaves scope and provider_user_id untouched (they don't change on refresh).
+    """
+    admin = get_admin_client()
+    admin.table(OAUTH_TABLE).update(
+        {
+            "access_token": encrypt(access_token),
+            "refresh_token": encrypt(refresh_token),
+            "expires_at": expires_at.isoformat() if expires_at else None,
+        }
+    ).eq("user_id", user_id).eq("provider", provider).execute()
+
+
 def get_decrypted_tokens(
     user_id: str, provider: Provider
 ) -> tuple[str, str, datetime | None]:

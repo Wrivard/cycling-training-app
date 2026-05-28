@@ -63,7 +63,12 @@
     "profileSaved": "Enregistré",
     "profileSaveError": "Impossible d'enregistrer ton profil. Réessaie.",
     "connectedNotice": "{{provider}} est maintenant connecté.",
-    "errorNotice": "OAuth échoué : {{error}}. Réessaie."
+    "errorNotice": "OAuth échoué : {{error}}. Réessaie.",
+    "syncSummary": "{{fetched}} récupéré(s), {{upserted}} mis à jour.",
+    "syncRateLimited": "Limite atteinte côté fournisseur. Réessaie dans quelques minutes.",
+    "syncNotConnected": "Pas connecté. Clique Connecter d'abord.",
+    "syncUpstream": "Le fournisseur a renvoyé une erreur. Réessaie plus tard.",
+    "syncFailed": "Synchronisation échouée. Réessaie."
   },
   "common": {
     "loading": "Chargement…",

@@ -14,9 +14,12 @@ import {
   useConnections,
   useDisconnectOAuth,
   useStartOAuth,
+  useSyncProvider,
   type ConnectionStatus,
   type ProviderKey,
+  type SyncResult,
 } from "@/hooks/useConnections";
+import { ApiError } from "@/lib/api";
 import { useCurrentUser, type UserProfile } from "@/hooks/useCurrentUser";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 
@@ -143,45 +146,91 @@ function ConnectionRow({
   const { t } = useTranslation();
   const start = useStartOAuth();
   const disconnect = useDisconnectOAuth();
+  const sync = useSyncProvider();
 
   const connected = row?.connected === true;
-  const busy = start.isPending || disconnect.isPending;
+  const busy = start.isPending || disconnect.isPending || sync.isPending;
+
+  const lastResult = sync.data && sync.variables === providerKey ? sync.data : null;
+  const lastError =
+    sync.error && sync.variables === providerKey ? formatSyncError(sync.error, t) : null;
 
   return (
-    <li className="flex items-center justify-between py-4">
-      <div className="flex items-center gap-3">
-        <span className="text-[15px] font-medium text-foreground">{label}</span>
-        <Badge tone={connected ? "good" : "neutral"}>
-          {connected ? t("settings.statusConnected") : t("settings.statusDisconnected")}
-        </Badge>
-      </div>
-      <div className="flex gap-2">
-        {connected ? (
-          <>
-            <Button variant="secondary" size="sm" disabled={busy} title="Coming in step 4">
-              {t("settings.syncNow")}
+    <li className="py-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className="text-[15px] font-medium text-foreground">{label}</span>
+          <Badge tone={connected ? "good" : "neutral"}>
+            {connected ? t("settings.statusConnected") : t("settings.statusDisconnected")}
+          </Badge>
+        </div>
+        <div className="flex gap-2">
+          {connected ? (
+            <>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={busy}
+                onClick={() => sync.mutate(providerKey)}
+              >
+                {sync.isPending && sync.variables === providerKey
+                  ? t("common.loading")
+                  : t("settings.syncNow")}
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                disabled={busy}
+                onClick={() => disconnect.mutate(providerKey)}
+              >
+                {disconnect.isPending && disconnect.variables === providerKey
+                  ? t("common.loading")
+                  : t("settings.disconnect")}
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" disabled={busy} onClick={() => start.mutate(providerKey)}>
+              {start.isPending && start.variables === providerKey
+                ? t("common.loading")
+                : t("settings.connect")}
             </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              disabled={busy}
-              onClick={() => disconnect.mutate(providerKey)}
-            >
-              {disconnect.isPending ? t("common.loading") : t("settings.disconnect")}
-            </Button>
-          </>
-        ) : (
-          <Button
-            size="sm"
-            disabled={busy}
-            onClick={() => start.mutate(providerKey)}
-          >
-            {start.isPending ? t("common.loading") : t("settings.connect")}
-          </Button>
-        )}
+          )}
+        </div>
       </div>
+
+      {(lastResult || lastError) && (
+        <p
+          className={
+            "mt-2 text-[12px] " +
+            (lastError ? "text-[var(--color-rec-bad)]" : "text-gray-500")
+          }
+          role={lastError ? "alert" : "status"}
+        >
+          {lastError ?? renderSyncSummary(lastResult, t)}
+        </p>
+      )}
     </li>
   );
+}
+
+function renderSyncSummary(result: SyncResult | null, t: ReturnType<typeof useTranslation>["t"]): string {
+  if (!result) return "";
+  return t("settings.syncSummary", {
+    fetched: result.fetched,
+    upserted: result.upserted,
+  });
+}
+
+function formatSyncError(
+  error: Error,
+  t: ReturnType<typeof useTranslation>["t"],
+): string {
+  if (error instanceof ApiError) {
+    if (error.status === 429) return t("settings.syncRateLimited");
+    if (error.status === 409) return t("settings.syncNotConnected");
+    if (error.status === 502) return t("settings.syncUpstream");
+  }
+  return t("settings.syncFailed");
 }
 
 function ProfileForm({ profile }: { profile: UserProfile }) {

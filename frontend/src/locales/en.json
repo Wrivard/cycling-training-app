@@ -63,7 +63,12 @@
     "profileSaved": "Saved",
     "profileSaveError": "Could not save your profile. Try again.",
     "connectedNotice": "{{provider}} is now connected.",
-    "errorNotice": "OAuth failed: {{error}}. Try again."
+    "errorNotice": "OAuth failed: {{error}}. Try again.",
+    "syncSummary": "{{fetched}} fetched, {{upserted}} updated.",
+    "syncRateLimited": "Rate-limited by the provider. Try again in a few minutes.",
+    "syncNotConnected": "Not connected. Click Connect first.",
+    "syncUpstream": "Provider returned an error. Try again later.",
+    "syncFailed": "Sync failed. Try again."
   },
   "common": {
     "loading": "Loading…",

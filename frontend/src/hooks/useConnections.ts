@@ -53,4 +53,25 @@ export function useDisconnectOAuth() {
   });
 }
 
+export type SyncResult = {
+  provider: ProviderKey;
+  fetched: number;
+  upserted: number;
+  started_at: string;
+  finished_at: string;
+};
+
+export function useSyncProvider() {
+  const queryClient = useQueryClient();
+  return useMutation<SyncResult, Error, ProviderKey>({
+    mutationFn: (provider) =>
+      apiFetch<SyncResult>(`/api/sync/${provider}`, { method: "POST" }),
+    onSuccess: () => {
+      // Future steps (calendar, dashboard) read activities + whoop_metrics —
+      // invalidate the connections cache so timestamps refresh too.
+      void queryClient.invalidateQueries({ queryKey: CONNECTIONS_KEY });
+    },
+  });
+}
+
 export { CONNECTIONS_KEY };
