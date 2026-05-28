@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routers import oauth, routes, sessions, sync, users
+from app.routers import activities, oauth, routes, sessions, sync, users, whoop
 
 
 @asynccontextmanager
@@ -40,6 +40,8 @@ def create_app() -> FastAPI:
     app.include_router(sync.router, prefix="/api/sync", tags=["sync"])
     app.include_router(routes.router, prefix="/api/routes", tags=["routes"])
     app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
+    app.include_router(activities.router, prefix="/api/activities", tags=["activities"])
+    app.include_router(whoop.router, prefix="/api/whoop", tags=["whoop"])
 
     @app.get("/health", tags=["health"])
     async def health() -> dict[str, str]:

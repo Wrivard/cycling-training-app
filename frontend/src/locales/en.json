@@ -38,7 +38,40 @@
   },
   "calendar": {
     "title": "Calendar",
-    "subtitle": "Plan sessions, see what's done, compare planned vs actual."
+    "subtitle": "Plan sessions, see what's done, compare planned vs actual.",
+    "today": "Today",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "newSession": "New session",
+    "editSession": "Edit session",
+    "date": "Date",
+    "type": "Type",
+    "title": "Title",
+    "titlePlaceholder": "e.g. 4×8' VO2max",
+    "description": "Notes",
+    "targetDistance": "Target distance (km)",
+    "targetDuration": "Target duration (min)",
+    "confirmDelete": "Delete this session?",
+    "saveError": "Could not save. Try again.",
+    "recoveryAria": "Whoop recovery {{score}}%",
+    "noRecovery": "No recovery data",
+    "weekdays": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "types": {
+      "endurance": "Endurance",
+      "intervals": "Intervals",
+      "recovery": "Recovery",
+      "rest": "Rest",
+      "race": "Race",
+      "other": "Other"
+    }
   },
   "routes": {
     "title": "Routes",

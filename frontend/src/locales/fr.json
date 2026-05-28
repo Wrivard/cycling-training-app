@@ -38,7 +38,40 @@
   },
   "calendar": {
     "title": "Calendrier",
-    "subtitle": "Planifie tes séances, vois ce qui est fait, compare prévu vs réalisé."
+    "subtitle": "Planifie tes séances, vois ce qui est fait, compare prévu vs réalisé.",
+    "today": "Aujourd'hui",
+    "prevMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "newSession": "Nouvelle séance",
+    "editSession": "Modifier la séance",
+    "date": "Date",
+    "type": "Type",
+    "title": "Titre",
+    "titlePlaceholder": "p. ex. 4×8' VO2max",
+    "description": "Notes",
+    "targetDistance": "Distance prévue (km)",
+    "targetDuration": "Durée prévue (min)",
+    "confirmDelete": "Supprimer cette séance ?",
+    "saveError": "Impossible d'enregistrer. Réessaie.",
+    "recoveryAria": "Récupération Whoop {{score}}%",
+    "noRecovery": "Pas de données de récupération",
+    "weekdays": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim"
+    },
+    "types": {
+      "endurance": "Endurance",
+      "intervals": "Intervalles",
+      "recovery": "Récupération",
+      "rest": "Repos",
+      "race": "Course",
+      "other": "Autre"
+    }
   },
   "routes": {
     "title": "Routes",

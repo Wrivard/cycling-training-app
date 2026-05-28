@@ -177,8 +177,14 @@ class SyncResult(BaseModel):
 
 
 class SessionComparison(BaseModel):
+    """Planned vs actual after matching a session to a Strava activity.
+
+    Each delta is `actual - target` and is None when the planned target
+    wasn't set (we don't fabricate a baseline).
+    """
+
     session: PlannedSession
     activity: Activity
-    delta_distance_km: float
-    delta_duration_min: float
-    delta_elevation_m: float
+    delta_distance_km: float | None = None
+    delta_duration_min: float | None = None
+    delta_elevation_m: float | None = None
