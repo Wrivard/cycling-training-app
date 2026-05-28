@@ -2,9 +2,15 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Modal } from "@/components/ui/Modal";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import {
+  useActivities,
+  useMatchSession,
+  type Activity,
+} from "@/hooks/useActivities";
 import {
   useCreateSession,
   useDeleteSession,
@@ -264,6 +270,217 @@ function SessionForm({
           </Button>
         </div>
       </div>
+
+      {existing ? <MatchingSection session={existing} /> : null}
     </form>
+  );
+}
+
+/** Planned-vs-actual section. Pulls Strava activities for the session's date. */
+function MatchingSection({ session }: { session: PlannedSession }) {
+  const { t } = useTranslation();
+  const activities = useActivities(session.date, session.date);
+  const matchMutation = useMatchSession();
+  const updateMutation = useUpdateSession();
+
+  const matched =
+    session.completed_activity_id != null
+      ? activities.data?.find((a) => a.id === session.completed_activity_id)
+      : undefined;
+  const candidates = (activities.data ?? []).filter(
+    (a) => a.id !== session.completed_activity_id,
+  );
+
+  const busy = matchMutation.isPending || updateMutation.isPending;
+
+  function onUnmatch() {
+    updateMutation.mutate({
+      id: session.id,
+      patch: { completed_activity_id: null },
+    });
+  }
+
+  return (
+    <div className="mt-2 border-t border-gray-100 pt-4 space-y-3">
+      <h3 className="text-[13px] font-medium tracking-[var(--tracking-snug)] text-foreground">
+        {t("calendar.matching")}
+      </h3>
+
+      {activities.isLoading ? (
+        <p className="text-[13px] text-gray-500">{t("common.loading")}</p>
+      ) : null}
+
+      {matched ? (
+        <ComparisonView session={session} activity={matched} onUnmatch={onUnmatch} busy={busy} />
+      ) : (
+        <>
+          {candidates.length === 0 && !activities.isLoading ? (
+            <p className="text-[13px] text-gray-500">{t("calendar.noActivityToMatch")}</p>
+          ) : null}
+          {candidates.length > 0 ? (
+            <ul className="space-y-1.5">
+              {candidates.map((activity) => (
+                <li
+                  key={activity.id}
+                  className="flex items-center justify-between gap-3 rounded-md bg-gray-50 px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <div className="truncate text-[13px] font-medium text-foreground">
+                      {activity.name}
+                    </div>
+                    <div className="mt-0.5 text-[12px] text-gray-500 font-mono tabular-nums">
+                      {activity.distance_km.toFixed(1)} km ·{" "}
+                      {Math.round(activity.moving_time_s / 60)} min
+                      {activity.elevation_gain_m > 0
+                        ? ` · +${Math.round(activity.elevation_gain_m)} m`
+                        : ""}
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={() =>
+                      matchMutation.mutate({
+                        sessionId: session.id,
+                        activityId: activity.id,
+                      })
+                    }
+                  >
+                    {matchMutation.isPending &&
+                    matchMutation.variables?.activityId === activity.id
+                      ? t("common.loading")
+                      : t("calendar.matchButton")}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}
+
+function ComparisonView({
+  session,
+  activity,
+  onUnmatch,
+  busy,
+}: {
+  session: PlannedSession;
+  activity: Activity;
+  onUnmatch: () => void;
+  busy: boolean;
+}) {
+  const { t } = useTranslation();
+
+  const actualMinutes = activity.moving_time_s / 60;
+  const distanceDelta =
+    session.target_distance_km != null
+      ? activity.distance_km - session.target_distance_km
+      : null;
+  const durationDelta =
+    session.target_duration_min != null
+      ? actualMinutes - session.target_duration_min
+      : null;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <Badge tone="blue">Strava</Badge>
+            <span className="truncate text-[13px] font-medium text-foreground">
+              {activity.name}
+            </span>
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={busy}
+          onClick={onUnmatch}
+        >
+          {busy ? t("common.loading") : t("calendar.unmatch")}
+        </Button>
+      </div>
+
+      <dl className="grid grid-cols-3 gap-3 rounded-md bg-gray-50 px-3 py-2 text-[12px]">
+        <Metric
+          label={t("calendar.metricDistance")}
+          actual={`${activity.distance_km.toFixed(1)} km`}
+          target={
+            session.target_distance_km != null
+              ? `${session.target_distance_km.toFixed(1)} km`
+              : null
+          }
+          delta={distanceDelta != null ? `${distanceDelta >= 0 ? "+" : ""}${distanceDelta.toFixed(1)} km` : null}
+          deltaTone={distanceDelta == null ? "neutral" : distanceDelta >= 0 ? "good" : "bad"}
+        />
+        <Metric
+          label={t("calendar.metricDuration")}
+          actual={`${Math.round(actualMinutes)} min`}
+          target={
+            session.target_duration_min != null
+              ? `${session.target_duration_min} min`
+              : null
+          }
+          delta={
+            durationDelta != null
+              ? `${durationDelta >= 0 ? "+" : ""}${Math.round(durationDelta)} min`
+              : null
+          }
+          deltaTone={durationDelta == null ? "neutral" : durationDelta >= 0 ? "good" : "bad"}
+        />
+        <Metric
+          label={t("calendar.metricElevation")}
+          actual={`${Math.round(activity.elevation_gain_m)} m`}
+          target={null}
+          delta={null}
+          deltaTone="neutral"
+        />
+      </dl>
+    </div>
+  );
+}
+
+function Metric({
+  label,
+  actual,
+  target,
+  delta,
+  deltaTone,
+}: {
+  label: string;
+  actual: string;
+  target: string | null;
+  delta: string | null;
+  deltaTone: "good" | "bad" | "neutral";
+}) {
+  return (
+    <div>
+      <dt className="font-mono uppercase text-[10px] text-gray-500">{label}</dt>
+      <dd className="mt-0.5 text-[13px] font-medium tabular-nums text-foreground">{actual}</dd>
+      {target ? (
+        <dd className="text-[11px] text-gray-500 tabular-nums">↳ {target}</dd>
+      ) : null}
+      {delta ? (
+        <dd
+          className={
+            "mt-0.5 text-[11px] tabular-nums " +
+            (deltaTone === "good"
+              ? "text-[var(--color-rec-good)]"
+              : deltaTone === "bad"
+                ? "text-[var(--color-rec-bad)]"
+                : "text-gray-500")
+          }
+        >
+          {delta}
+        </dd>
+      ) : null}
+    </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   type PlannedSession,
   type SessionType,
 } from "@/hooks/usePlannedSessions";
+import { useActivities } from "@/hooks/useActivities";
 import { useWhoopMetrics } from "@/hooks/useWhoopMetrics";
 import { cn } from "@/lib/cn";
 
@@ -95,6 +96,7 @@ export function CalendarPage() {
 
   const sessionsQuery = usePlannedSessions(startKey, endKey);
   const whoopQuery = useWhoopMetrics(startKey, endKey);
+  const activitiesQuery = useActivities(startKey, endKey);
 
   // Index sessions and whoop metrics by YYYY-MM-DD for O(1) lookup per cell.
   const sessionsByDate = useMemo(() => {
@@ -114,6 +116,15 @@ export function CalendarPage() {
     }
     return map;
   }, [whoopQuery.data]);
+
+  const activityCountByDate = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const a of activitiesQuery.data ?? []) {
+      const key = a.start_date.slice(0, 10); // YYYY-MM-DD from ISO
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return map;
+  }, [activitiesQuery.data]);
 
   const monthLabel = viewMonth.toLocaleDateString(i18n.resolvedLanguage ?? "en", {
     month: "long",
@@ -177,6 +188,7 @@ export function CalendarPage() {
             const isToday = cellKey === todayKey;
             const sessions = sessionsByDate.get(cellKey) ?? [];
             const recovery = recoveryByDate.get(cellKey);
+            const activityCount = activityCountByDate.get(cellKey) ?? 0;
 
             return (
               <button
@@ -203,22 +215,32 @@ export function CalendarPage() {
                   >
                     {cellDate.getDate()}
                   </span>
-                  {recovery !== undefined ? (
-                    <span
-                      className={cn(
-                        "h-2.5 w-2.5 rounded-full",
-                        recoveryToneClass(recovery ?? null),
-                      )}
-                      aria-label={t("calendar.recoveryAria", {
-                        score: recovery ?? "?",
-                      })}
-                      title={
-                        recovery != null
-                          ? `Recovery ${recovery}%`
-                          : t("calendar.noRecovery")
-                      }
-                    />
-                  ) : null}
+                  <div className="flex items-center gap-1.5">
+                    {activityCount > 0 ? (
+                      <span
+                        className="inline-flex h-[14px] items-center rounded-full bg-[var(--color-badge-blue-bg)] px-1.5 text-[10px] font-mono font-medium uppercase text-[var(--color-badge-blue-text)]"
+                        title={t("calendar.activitiesCount", { count: activityCount })}
+                      >
+                        S{activityCount > 1 ? activityCount : ""}
+                      </span>
+                    ) : null}
+                    {recovery !== undefined ? (
+                      <span
+                        className={cn(
+                          "h-2.5 w-2.5 rounded-full",
+                          recoveryToneClass(recovery ?? null),
+                        )}
+                        aria-label={t("calendar.recoveryAria", {
+                          score: recovery ?? "?",
+                        })}
+                        title={
+                          recovery != null
+                            ? `Recovery ${recovery}%`
+                            : t("calendar.noRecovery")
+                        }
+                      />
+                    ) : null}
+                  </div>
                 </div>
 
                 {sessions.length > 0 && (
